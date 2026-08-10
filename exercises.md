@@ -6,7 +6,8 @@
 > Cách trả lời: thay dòng `> *Câu trả lời của bạn*` bằng câu trả lời.
 > `grade.py` đếm số câu đã trả lời (15 điểm cho 10 câu).
 >
-> Họ và tên: Nguyễn Thành An  Mã học viên: 2A202601017
+> Họ và tên: Nguyễn Thành An 
+> Mã học viên: 2A202601017
 
 ---
 
@@ -47,12 +48,12 @@ docker images | grep agent
 
 | Bản | Dung lượng |
 |-----|-----------|
-| 1 stage (bản đầu) | ~280 MB |
-| Multi-stage | ~85 MB |
+| 1 stage (Dockerfile.single) | 458 MB |
+| Multi-stage (Dockerfile) | 141 MB |
 
 Giải thích: phần dung lượng chênh lệch đó là những gì?
 
-> Phần chênh lệch (~195 MB) là các công cụ build chỉ cần lúc compile, không cần khi chạy: `gcc`, `musl-dev` (để build các extension C của uvicorn như `uvloop`, `httptools`), toàn bộ header file và static library của Alpine. Multi-stage build giữ lại `/install` (các package Python đã compile) nhưng bỏ lại compiler và toolchain trong stage builder, nên image runtime chỉ chứa Python interpreter và code đã build sẵn.
+> Phần chênh lệch (~317 MB) là các công cụ build chỉ cần lúc compile, không cần khi chạy: `gcc`, `musl-dev` (để build các extension C của uvicorn như `uvloop`, `httptools`), toàn bộ header file và static library của Alpine. Ngoài ra bản single-stage giữ lại cả test dependencies (`pytest`, `httpx`, `fakeredis`, `PyYAML`) vì không có bước strip. Multi-stage build giữ lại `/install` (các package Python đã compile, đã lọc bỏ test deps) nhưng bỏ lại compiler và toolchain trong stage builder, nên image runtime chỉ chứa Python interpreter và code đã build sẵn.
 
 ---
 
