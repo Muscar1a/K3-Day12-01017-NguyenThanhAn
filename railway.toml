@@ -1,8 +1,7 @@
 # CP5 — Cấu hình deploy Railway (dùng nếu bạn chọn Railway).
 #
-# Các biến môi trường KHÔNG khai báo ở đây. Đặt chúng trong dashboard hoặc:
-#     railway variables --set AGENT_API_KEY=...
-#
+# AGENT_API_KEY: đặt thủ công trong dashboard (secret, không commit).
+# REDIS_URL: tự động lấy từ Redis service qua reference variable bên dưới.
 # Railway tự gán biến PORT — app phải đọc $PORT, đừng cố định 8000.
 
 [build]
@@ -10,8 +9,14 @@ builder = "dockerfile"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "sh -c 'uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}'"
 healthcheckPath = "/health"
 healthcheckTimeout = 30
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
+
+[environments.production.variables]
+REDIS_URL = "${{Redis.REDIS_URL}}"
+RATE_LIMIT_PER_MINUTE = "10"
+MONTHLY_BUDGET_USD = "10.0"
+LOG_LEVEL = "INFO"
