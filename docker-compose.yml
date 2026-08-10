@@ -36,8 +36,6 @@ services:
 
   agent:
     build: .
-    ports:
-      - "8000:8000"
     depends_on:
       - redis
     environment:
@@ -48,6 +46,15 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - agent
 
 volumes:
   redis-data:
